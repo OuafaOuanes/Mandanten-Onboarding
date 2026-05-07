@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mandanten-Onboarding – Kanzlei</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f5f5f2;color:#1a1a1a;font-size:15px}
+:root{
+  --teal:#1D9E75;--teal-d:#0F6E56;--teal-dd:#085041;
+  --teal-l:#E1F5EE;--teal-m:#9FE1CB;
+  --blue-l:#E6F1FB;--blue-b:#85B7EB;--blue-d:#0C447C;
+  --amber-l:#FAEEDA;--amber-b:#FAC775;--amber-d:#633806;
+  --red-l:#FCEBEB;--red-b:#F09595;--red-d:#A32D2D;
+  --gray:#888;--border:#ddd;--bg:#f5f5f2;--white:#fff;
+  --radius:8px;--radius-lg:12px
+}
+.page{max-width:780px;margin:0 auto;padding:24px 16px 60px}
+.kanzlei-header{background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--border);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+.kanzlei-logo{width:48px;height:48px;background:var(--teal);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kanzlei-logo svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.kanzlei-header h1{font-size:18px;font-weight:600;color:#1a1a1a}
+.kanzlei-header p{font-size:13px;color:var(--gray);margin-top:2px}
+.steps-nav{display:flex;gap:0;margin-bottom:20px;background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden;overflow-x:auto}
+.step-btn{padding:10px 14px;font-size:12px;cursor:pointer;border:none;background:none;color:var(--gray);border-bottom:3px solid transparent;white-space:nowrap;font-family:inherit;font-weight:500;transition:all .15s}
+.step-btn.active{color:var(--teal-d);border-bottom-color:var(--teal);background:var(--teal-l)}
+.step-btn.done{color:var(--teal-d)}
+.step-btn.done::before{content:'✓ ';font-size:11px}
+.section{background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--border);padding:20px 24px;margin-bottom:16px}
+.section-title{font-size:11px;font-weight:700;color:var(--teal-d);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.section-title svg{width:14px;height:14px;stroke:var(--teal-d);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.col2{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12px;color:#555;font-weight:600}
+.field input,.field select,.field textarea{
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:8px 11px;font-size:14px;background:var(--white);color:#1a1a1a;
+  width:100%;font-family:inherit;transition:border-color .15s
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--teal)}
+.field textarea{resize:vertical;min-height:70px}
+.req{color:var(--teal-d)}
+.tgl{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.tb{border:1px solid var(--border);border-radius:var(--radius);padding:5px 12px;font-size:12px;cursor:pointer;background:var(--white);color:#333;font-family:inherit;font-weight:500;transition:all .15s}
+.tb:hover{border-color:var(--teal)}
+.tb.on{border-color:var(--teal);background:var(--teal-l);color:var(--teal-dd);font-weight:600}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.type-card{background:var(--white);border:2px solid var(--border);border-radius:var(--radius-lg);padding:20px;cursor:pointer;text-align:left;transition:all .2s;font-family:inherit}
+.type-card:hover{border-color:var(--teal-m)}
+.type-card.active{border-color:var(--teal);background:var(--teal-l)}
+.type-card svg{width:28px;height:28px;stroke:var(--teal-d);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;display:block;margin-bottom:10px}
+.type-card h3{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.type-card p{font-size:12px;color:var(--gray)}
+.infobox{background:var(--blue-l);border:1px solid var(--blue-b);border-radius:var(--radius);padding:10px 13px;font-size:12px;color:var(--blue-d);display:flex;gap:8px;align-items:flex-start;margin-bottom:14px}
+.infobox svg{width:15px;height:15px;stroke:var(--blue-d);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0;margin-top:1px}
+.warnbox{background:var(--amber-l);border:1px solid var(--amber-b);border-radius:var(--radius);padding:10px 13px;font-size:12px;color:var(--amber-d);display:flex;gap:8px;align-items:flex-start;margin-bottom:14px}
+.warnbox svg{width:15px;height:15px;stroke:var(--amber-d);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0;margin-top:1px}
+.kind-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px}
+.kind-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.kind-title{font-size:13px;font-weight:600;color:#1a1a1a;display:flex;align-items:center;gap:6px}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
+.b-teal{background:var(--teal-l);color:var(--teal-dd)}
+.b-blue{background:var(--blue-l);color:var(--blue-d)}
+.b-amber{background:var(--amber-l);color:var(--amber-d)}
+.b-red{background:var(--red-l);color:var(--red-d)}
+.del-btn{border:1px solid var(--border);border-radius:var(--radius);padding:4px 10px;font-size:12px;cursor:pointer;background:var(--white);color:var(--gray);font-family:inherit}
+.del-btn:hover{border-color:var(--red-b);color:var(--red-d)}
+.add-btn{border:1px dashed var(--teal-m);border-radius:var(--radius);padding:9px 16px;font-size:13px;cursor:pointer;background:none;color:var(--teal-d);font-family:inherit;font-weight:600;display:flex;align-items:center;gap:6px;margin-top:6px;width:100%;justify-content:center;transition:all .15s}
+.add-btn:hover{background:var(--teal-l)}
+.nav-bar{display:flex;gap:10px;margin-top:24px;padding-top:18px;border-top:1px solid var(--border)}
+.btn-primary{flex:1;background:var(--teal);color:var(--white);border:none;border-radius:var(--radius);padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
+.btn-primary:hover{background:var(--teal-d)}
+.btn-secondary{border:1px solid var(--border);border-radius:var(--radius);padding:10px 18px;font-size:13px;cursor:pointer;background:var(--white);color:#333;font-family:inherit;font-weight:500;transition:all .15s}
+.btn-secondary:hover{border-color:var(--teal);color:var(--teal-d)}
+.btn-print{border:1px solid var(--teal);border-radius:var(--radius);padding:10px 18px;font-size:13px;cursor:pointer;background:var(--teal-l);color:var(--teal-d);font-family:inherit;font-weight:600}
+.progress-wrap{margin-bottom:20px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-bottom:6px}
+.progress-track{height:5px;background:#e8e8e5;border-radius:3px}
+.progress-fill{height:5px;background:var(--teal);border-radius:3px;transition:width .3s}
+.sum-card{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:10px}
+.sum-head{background:var(--teal-l);padding:9px 16px;font-size:12px;font-weight:700;color:var(--teal-dd);border-bottom:1px solid var(--border)}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:1px solid #f0f0ee;font-size:13px}
+.sum-row:last-child{border-bottom:none}
+.sum-k{color:var(--gray)}
+.sum-v{font-weight:600;color:#1a1a1a;text-align:right;max-width:55%}
+.done-banner{background:var(--teal-l);border:1px solid var(--teal-m);border-radius:var(--radius-lg);padding:20px;text-align:center;margin-bottom:16px}
+.done-banner .check{font-size:36px;display:block;margin-bottom:8px}
+.done-banner h2{font-size:16px;font-weight:700;color:var(--teal-dd)}
+.done-banner p{font-size:13px;color:var(--teal-d);margin-top:4px}
+.divider{border-top:1px solid #f0f0ee;margin:16px 0}
+.intern-banner{background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--radius);padding:10px 13px;font-size:12px;color:#7c2d12;margin-bottom:14px;display:flex;gap:8px;align-items:center}
+.step-page{display:none}
+.step-page.active{display:block}
+.print-only{display:none}
+@media print{
+  .steps-nav,.nav-bar,.btn-primary,.btn-secondary,.btn-print,.no-print{display:none!important}
+  .step-page{display:block!important}
+  body{background:#fff}
+  .section{break-inside:avoid}
+}
+@media(max-width:580px){
+  .grid{grid-template-columns:1fr}
+  .col2{grid-column:1}
+  .type-grid{grid-template-columns:1fr}
+  .steps-nav{flex-wrap:nowrap}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="kanzlei-header">
+  <div class="kanzlei-logo">
+    <svg viewBox="0 0 24 24"><path d="M3 21h18M3 7v1a3 3 0 006 0V7m0 1a3 3 0 006 0V7m0 1a3 3 0 006 0V7H3l2-4h14l2 4"/></svg>
+  </div>
+  <div>
+    <h1>Mandanten-Onboarding</h1>
+    <p>Neue Mandanten aufnehmen — Privat &amp; Unternehmen</p>
+  </div>
+  <button class="btn-print no-print" onclick="window.print()" style="margin-left:auto">🖨 Drucken / PDF</button>
+</div>
+
+<div class="steps-nav" id="stepsNav"></div>
+<div class="progress-wrap">
+  <div class="progress-label"><span id="stepLabel">Schritt 1</span><span id="stepPct">0%</span></div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div id="pages"></div>
+
+</div>
+<script>
+const D = {};
+let currentStep = 0;
+
+const STEPS_PRIV = ['Mandantentyp','Persönliche Daten','Familie & Kinder','Kommunikation','Adresse & Finanzamt','Bankverbindung','Leistungen','Intern','Zusammenfassung'];
+const STEPS_FIRM = ['Mandantentyp','Unternehmen','Ansprechpartner','Familie & Kinder','Kommunikation','Adresse & Finanzamt','Bankverbindung','Leistungen','Intern','Zusammenfassung'];
+
+function steps(){ return D.mtype==='firma' ? STEPS_FIRM : STEPS_PRIV; }
+
+// ── SVG icons (inline, no CDN needed) ──
+const SVG = {
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  building:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h1M9 13h1M9 17h1M14 9h1M14 13h1M14 17h1"/></svg>',
+  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92v2z"/></svg>',
+  map:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  bank:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M3 22V12M21 22V12M6 22V12M18 22V12M9 22V12M15 22V12M12 22V12M2 12l10-9 10 9H2z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+  warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  baby:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px"><circle cx="12" cy="4" r="2"/><path d="M9 12H5l2 9h10l2-9h-4M9 12c0-3 1.5-5 3-5s3 2 3 5"/></svg>',
+};
+
+function fld(label, key, type='text', placeholder='', opts=null, req=false){
+  if(type==='select'){
+    return `<div class="field"><label>${label}${req?'<span class="req">*</span>':''}</label><select onchange="D['${key}']=this.value"><option value="">– wählen –</option>${opts.map(o=>`<option ${D[key]===o?'selected':''}>${o}</option>`).join('')}</select></div>`;
+  }
+  if(type==='textarea'){
+    return `<div class="field"><label>${label}</label><textarea onchange="D['${key}']=this.value" placeholder="${placeholder}">${D[key]||''}</textarea></div>`;
+  }
+  return `<div class="field"><label>${label}${req?'<span class="req">*</span>':''}</label><input type="${type}" value="${D[key]||''}" placeholder="${placeholder}" onchange="D['${key}']=this.value"></div>`;
+}
+
+function tgl(label, key, options, multi=false){
+  const val = D[key] || (multi ? [] : '');
+  let btns = options.map(v=>{
+    const on = multi ? val.includes(v) : val===v;
+    const click = multi
+      ? `onclick="toggleArr('${key}','${v}');renderAll()"`
+      : `onclick="D['${key}']='${v}';renderAll()"`;
+    return `<button class="tb ${on?'on':''}" ${click}>${v}</button>`;
+  }).join('');
+  return `<div class="field col2"><label>${label}</label><div class="tgl">${btns}</div></div>`;
+}
+
+function sectionTitle(icon, text){
+  return `<div class="section-title">${SVG[icon]||''}${text}</div>`;
+}
+
+function infobox(text){ return `<div class="infobox">${SVG.info}<span>${text}</span></div>`; }
+function warnbox(text){ return `<div class="warnbox">${SVG.warn}<span>${text}</span></div>`; }
+
+// ════════════════════════════════════════
+// SEITE 0: Mandantentyp
+// ════════════════════════════════════════
+function pageType(){
+  return `
+  ${infobox('Wählen Sie den Mandantentyp — der Fragebogen passt sich automatisch an.')}
+  <div class="type-grid">
+    <button class="type-card ${D.mtype==='privat'?'active':''}" onclick="D.mtype='privat';currentStep=1;renderAll()">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <h3>Privatperson</h3>
+      <p>Einkommensteuer, Lohnsteuer, Kapitalvermögen, Erbschaft, private Vermögensverwaltung</p>
+    </button>
+    <button class="type-card ${D.mtype==='firma'?'active':''}" onclick="D.mtype='firma';currentStep=1;renderAll()">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h1M9 13h1M9 17h1M14 9h1M14 13h1M14 17h1"/></svg>
+      <h3>Unternehmen</h3>
+      <p>GmbH, GbR, Einzelunternehmen, UG, AG, KG, GmbH &amp; Co. KG, Freiberufler</p>
+    </button>
+  </div>`;
+}
+
+// ════════════════════════════════════════
+// SEITE: Persönliche Daten (Privat)
+// ════════════════════════════════════════
+function pagePerson(){
+  return `
+  <div class="section">
+    ${sectionTitle('user','Persönliche Daten')}
+    <div class="grid">
+      ${fld('Anrede','anrede','select','',[' Herr','Frau','Divers'],true)}
+      ${fld('Titel / Akadem. Grad','titel','text','Dr., Prof. ...')}
+      ${fld('Vorname','vorname','text','',null,true)}
+      ${fld('Nachname','nachname','text','',null,true)}
+      ${fld('Geburtsdatum','geb','date')}
+      ${fld('Geburtsort','gebort')}
+      ${fld('Staatsangehörigkeit','staat','text','Deutsch')}
+      ${fld('Beruf / Tätigkeit','beruf')}
+      ${fld('Steuer-Identifikationsnummer','steuerid','text','11 Stellen')}
+      ${fld('Familienstand','famstand','select','',['Ledig','Verheiratet','Eingetr. Lebenspartnerschaft','Getrennt lebend','Geschieden','Verwitwet'])}
+    </div>
+  </div>
+  <div class="section">
+    ${sectionTitle('lock','Legitimation (GwG §11)')}
+    ${infobox('Identifizierungspflicht vor Aufnahme der Geschäftsbeziehung — Ausweiskopie aufbewahren (5 Jahre).')}
+    <div class="grid">
+      ${fld('Ausweisart','ausweisart','select','',['Personalausweis','Reisepass','Niederlassungserlaubnis'])}
+      ${fld('Ausweisnummer','ausweisnr')}
+      ${fld('Ausgestellt von (Behörde)','ausweisbeh')}
+      ${fld('Gültig bis','ausweisbis','date')}
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════
+// SEITE: Unternehmen
+// ════════════════════════════════════════
+function pageCompany(){
+  return `
+  <div class="section">
+    ${sectionTitle('building','Das Unternehmen')}
+    <div class="grid">
+      <div class="field col2">${'<label>Firmenname <span class="req">*</span></label>'}<input value="${D.firmenname||''}" onchange="D.firmenname=this.value"></div>
+      ${fld('Rechtsform','rechtsform','select','',['GmbH','GbR','Einzelunternehmen','UG (haftungsbeschränkt)','AG','OHG','KG','GmbH & Co. KG','Freiberufler','Partnerschaftsgesellschaft'],true)}
+      ${fld('Unternehmensgegenstand','gegenstand','text','z.B. Lebensmittelhandel')}
+      ${fld('Branche','branche')}
+      ${fld('Betriebsnummer','betriebsnr')}
+      ${fld('Anzahl Mitarbeiter','mitarb_anz','number')}
+      ${fld('Gründungsdatum','gruendung','date')}
+      ${fld('Gesellschaftsvertragsdatum','gesvertrag','date')}
+      ${fld('Handelsregisternummer','hrbnr')}
+      ${fld('Registergericht','regericht')}
+      ${fld('Wirtschaftsjahr von','wjvon','text','z.B. 01.07.')}
+      ${fld('Wirtschaftsjahr bis','wjbis','text','z.B. 30.06.')}
+      ${fld('Umsatzsteuer-ID','ustid')}
+      ${fld('Steuernummer','steuernr_firm')}
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════
+// SEITE: Ansprechpartner (Firma)
+// ════════════════════════════════════════
+function pageContact(){
+  return `
+  <div class="section">
+    ${sectionTitle('user','Ansprechpartner & Gesetzliche Vertreter')}
+    <div class="grid">
+      ${fld('Anrede','ap_anrede','select','',['Herr','Frau'])}
+      ${fld('Titel','ap_titel','text','Dr. ...')}
+      ${fld('Vorname','ap_vn','text','',null,true)}
+      ${fld('Nachname','ap_nn','text','',null,true)}
+      ${fld('Funktion','ap_funk','text','z.B. Geschäftsführer')}
+      ${fld('Identifikationsnummer','ap_idnr','text','11 Stellen')}
+      ${fld('Geburtsdatum','ap_geb','date')}
+      ${fld('Privatadresse','ap_addr')}
+    </div>
+  </div>
+  <div class="section">
+    ${sectionTitle('lock','Legitimation Ansprechpartner (GwG §11)')}
+    ${infobox('Bei juristischen Personen: Identifizierung des wirtschaftlich Berechtigten erforderlich. Transparenzregister prüfen.')}
+    <div class="grid">
+      ${fld('Ausweisart','ap_ausweisart','select','',['Personalausweis','Reisepass'])}
+      ${fld('Ausweisnummer','ap_ausweisnr')}
+      ${fld('Ausgestellt von','ap_ausweisbeh')}
+      ${fld('Gültig bis','ap_ausweisbis','date')}
+    </div>
+  </div>
+  <div class="section">
+    ${sectionTitle('user','Gesellschafter')}
+    <div class="grid">
+      ${fld('Vorname Gesellschafter','gs_vn')}
+      ${fld('Nachname Gesellschafter','gs_nn')}
+      ${fld('Beteiligung in %','gs_anteil','number')}
+      ${fld('Art der Beteiligung','gs_art','select','',['Komplementär','Kommanditist','Gesellschafter','Aktionär'])}
+    </div>
+    ${warnbox('Weitere Gesellschafter bitte in der Anlage erfassen. WiEReG / Transparenzregister: Wirtschaftlich Berechtigte (ab 25% Beteiligung) dokumentieren — gesetzliche Pflicht.')}
+  </div>`;
+}
+
+// ════════════════════════════════════════
+// SEITE: Familie & Kinder
+// ════════════════════════════════════════
+function pageFamilie(){
+  const verheiratet = ['Verheiratet','Eingetr. Lebenspartnerschaft'].includes(D.famstand);
+  const getrennt = ['Getrennt lebend','Geschieden'].includes(D.famstand);
+  const alleinerziehend = ['Ledig','Getrennt lebend','Geschieden','Verwitwet'].includes(D.famstand) && (D.kinder||[]).length > 0;
+  const E = D.ehegatte || {};
+
+  let html = `<div class="section">
+    ${sectionTitle('heart','Familienstand & Steuerklasse')}
+    <div class="grid">
+      ${fld('Familienstand','famstand','select','',['Ledig','Verheiratet','Eingetr. Lebenspartnerschaft','Getrennt lebend','Geschieden','Verwitwet'],true)}`;
+
+  if(verheiratet || getrennt){
+    html += tgl('Veranlagung','veranlagung',['Zusammenveranlagung (Splitting)','Einzelveranlagung','Einzelveranlagung bes. Steuersatz']);
+  }
+
+  html += `
+      ${fld('Steuerklasse Mandant','stklasse','select','',['I','II','III','IV','IV mit Faktor','V','VI'])}
+      ${fld('Kirchensteuer','kirche','select','',['Ja (ev.)','Ja (kath.)','Ja (andere)','Nein'])}
+    </div>
+  </div>`;
+
+  if(verheiratet){
+    html += `<div class="section">
+      ${sectionTitle('heart','Ehegatte / Lebenspartner')}
+      ${infobox('Angaben zum Ehegatten sind für Zusammenveranlagung, Steuerklassenwahl und Splittingverfahren erforderlich.')}
+      <div class="grid">
+        ${fld('Anrede Ehegatte','eh_anrede','select','',['Herr','Frau'])}
+        ${fld('Titel','eh_titel','text','Dr. ...')}
+        ${fld('Vorname','eh_vn','text','',null,true)}
+        ${fld('Nachname','eh_nn','text','',null,true)}
+        ${fld('Geburtsdatum','eh_geb','date')}
+        ${fld('Steuer-ID Ehegatte','eh_steuerid','text','11 Stellen')}
+        ${fld('Steuerklasse Ehegatte','eh_stklasse','select','',['I','II','III','IV','IV mit Faktor','V','VI'])}
+        ${fld('Kirchensteuer Ehegatte','eh_kirche','select','',['Ja (ev.)','Ja (kath.)','Nein'])}
+        ${fld('Beruf / Tätigkeit','eh_beruf')}
+        ${fld('Arbeitgeber','eh_ag')}
+        ${tgl('Einkünfte Ehegatte aus','eh_einkunfte',['Nichtselbständige Arbeit','Selbständige Tätigkeit','Gewerbebetrieb','Kapitalvermögen','Vermietung & Verpachtung','Renteneinkünfte','Keine eigenen Einkünfte'],true)}
+      </div>
+      ${D.veranlagung==='Zusammenveranlagung (Splitting)' ? warnbox('Steuerklasse III/V: Günstiger wenn ein Partner deutlich mehr verdient. IV/IV: Bei ähnlichem Einkommen. Faktorverfahren: Verhindert hohe Nachzahlung. Empfehlung im Erstgespräch klären.') : ''}
+      <div class="divider"></div>
+      <div class="section-title" style="font-size:11px;font-weight:700;color:var(--teal-d);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Legitimation Ehegatte (GwG)</div>
+      <div class="grid">
+        ${fld('Ausweisart','eh_ausweisart','select','',['Personalausweis','Reisepass'])}
+        ${fld('Ausweisnummer','eh_ausweisnr')}
+        ${fld('Gültig bis','eh_ausweisbis','date')}
+        ${fld('Eigene Steuererklärung?','eh_eigeneerkl','select','',['Nein, gemeinsam','Ja, separat'])}
+      </div>
+    </div>`;
+  }
+
+  if(getrennt){
+    html += `<div class="section">
+      ${sectionTitle('user','Trennung / Scheidung')}
+      <div class="grid">
+        ${fld('Trennung seit','trennung_seit','date')}
+        ${tgl('Trennungsjahr — Splitting noch möglich?','splitting_moegl',['Ja (Trennungsjahr)','Nein'])}
+        ${tgl('Unterhalt AN Ex-Partner (Real-Splitting §10 Abs.1 Nr.1)','unterhalt_ex',['Ja','Nein'])}
+        ${D.unterhalt_ex==='Ja' ? fld('Unterhaltsbetrag / Jahr (€)','unterhalt_betrag','number','max. 13.805 € (2024)') : ''}
+      </div>
+    </div>`;
+  }
+
+  // Kinder
+  html += `<div class="section">
+    ${sectionTitle('baby','Kinder')}
+    ${infobox('Kinder relevant für: Kindergeld, Kinderfreibetrag, Entlastungsbetrag Alleinerziehende (Stklasse II), Kinderbetreuungskosten §10, Ausbildungsfreibetrag §33a, Behinderungspauschbetrag §33b.')}`;
+
+  if(alleinerziehend){
+    const eb = 4260 + ((D.kinder||[]).length - 1) * 240;
+    html += warnbox(`Alleinerziehend: Steuerklasse II prüfen! Entlastungsbetrag ${eb.toLocaleString('de-DE')} € (2024). Voraussetzung: Kind haushaltszugehörig, kein weiterer Volljähriger im Haushalt.`);
+  }
+
+  (D.kinder||[]).forEach((k,idx)=>{
+    const alter = k.geb ? Math.floor((Date.now()-new Date(k.geb))/(1000*60*60*24*365.25)) : null;
+    let badge = '';
+    if(alter!==null){
+      if(alter<18) badge=`<span class="badge b-teal">${alter} J.</span>`;
+      else if(alter<26) badge=`<span class="badge b-blue">${alter} J. — Berücksichtigung bis 25 prüfen</span>`;
+      else badge=`<span class="badge b-amber">${alter} J. — kein Kinderfreibetrag mehr</span>`;
+    }
+    html += `<div class="kind-card">
+      <div class="kind-hd">
+        <div class="kind-title">👶 Kind ${idx+1} ${badge}</div>
+        <button class="del-btn" onclick="D.kinder.splice(${idx},1);renderAll()">✕ Entfernen</button>
+      </div>
+      <div class="grid">
+        <div class="field"><label>Vorname <span class="req">*</span></label><input value="${k.vorname||''}" onchange="D.kinder[${idx}].vorname=this.value"></div>
+        <div class="field"><label>Nachname</label><input value="${k.nachname||''}" onchange="D.kinder[${idx}].nachname=this.value"></div>
+        <div class="field"><label>Geburtsdatum <span class="req">*</span></label><input type="date" value="${k.geb||''}" onchange="D.kinder[${idx}].geb=this.value;renderAll()"></div>
+        <div class="field"><label>Steuer-ID Kind</label><input value="${k.steuerid||''}" onchange="D.kinder[${idx}].steuerid=this.value" placeholder="11 Stellen"></div>
+        <div class="field"><label>Im Haushalt lebend</label><div class="tgl">${['Ja','Nein','Wechselmodell'].map(v=>`<button class="tb ${k.haushalt===v?'on':''}" onclick="D.kinder[${idx}].haushalt='${v}';renderAll()">${v}</button>`).join('')}</div></div>
+        <div class="field"><label>Kindergeld bezogen von</label><div class="tgl">${['Mandant','Ehegatte / Ex-Partner','Keine Berechtigung'].map(v=>`<button class="tb ${k.kindergeld===v?'on':''}" onclick="D.kinder[${idx}].kindergeld='${v}';renderAll()">${v}</button>`).join('')}</div></div>
+        ${alter!==null && alter>=18 && alter<27 ? `
+        <div class="field col2"><label>Status (volljährig) <span class="badge b-blue">Berücksichtigung bis 25 möglich</span></label>
+          <div class="tgl">${['In Berufsausbildung','Studium','Freiwilliger Dienst (FSJ/BFD)','Übergangszeit (max. 4 Monate)','Arbeitssuchend (gemeldet)','Behinderung (unbefristet)','Keine Berücksichtigung'].map(v=>`<button class="tb ${k.status===v?'on':''}" onclick="D.kinder[${idx}].status='${v}';renderAll()">${v}</button>`).join('')}</div>
+        </div>` : ''}
+        <div class="field col2"><label>Steuerlich relevante Positionen</label>
+          <div class="tgl">${['Kinderbetreuungskosten §10 Abs.1 Nr.5','Schulgeld §10 Abs.1 Nr.9','Ausbildungsfreibetrag §33a (auswärts)','Behinderungspauschbetrag §33b','Unterhalt an volljähriges Kind (auswärts)'].map(v=>`<button class="tb ${(k.positionen||[]).includes(v)?'on':''}" onclick="toggleKind(${idx},'${v}')">${v}</button>`).join('')}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html += `<button class="add-btn" onclick="if(!D.kinder)D.kinder=[];D.kinder.push({});renderAll()">+ Kind hinzufügen</button>`;
+  html += `</div>`;
+
+  html += `<div class="section">
+    ${sectionTitle('user','Weitere Unterhaltspflichten & Besonderheiten')}
+    <div class="grid">
+      ${tgl('Unterhaltspflichten gegenüber','unterhalt_an',['Eltern / Schwiegereltern (§33a)','Volljährige Kinder (auswärts)','Ex-Partner (Real-Splitting)','Andere Angehörige'],true)}
+      ${(D.unterhalt_an||[]).length > 0 ? `
+      <div class="field"><label>Unterhalt gesamt / Jahr (€)</label><input type="number" value="${D.unterhalt_ges||''}" onchange="D.unterhalt_ges=this.value" placeholder="max. 11.784 € §33a (2024)"></div>
+      ${tgl('Empfänger im Ausland?','unterhalt_ausland',['Ja','Nein'])}
+      ` : ''}
+      ${fld('Pflegegrad (eigene Person / Angehörige)','pflegegrad','select','',['Pflegegrad 1','Pflegegrad 2','Pflegegrad 3','Pflegegrad 4','Pflegegrad 5'])}
+      ${fld('Behinderungsgrad (GdB)','gdb','select','',['unter 50 GdB','50 GdB','60 GdB','70 GdB','80 GdB','90 GdB','100 GdB (Merkzeichen H/Bl/aG)'])}
+    </div>
+  </div>`;
+
+  return html;
+}
+
+// ════════════════════════════════════════
+// SEITE: Kommunikation
+// ════════════════════════════════════════
+function pageKomm(){
+  return `
+  <div class="section">
+    ${sectionTitle('phone','Kommunikation')}
+    <div class="grid">
+      ${fld('Telefon','tel','tel','+49 711 ...')}
+      ${fld('Mobil','mobil','tel')}
+      <div class="field col2">${'<label>E-Mail <span class="req">*</span></label>'}<input type="email" value="${D.email||''}" onchange="D.email=this.value"></div>
+      ${tgl('Bevorzugter Kommunikationsweg','komm',['E-Mail','Post','Telefon','Mandantenportal'],true)}
+      ${tgl('Korrespondenzsprache','sprache',['Deutsch','Englisch','Arabisch','Türkisch','Russisch','Andere'],true)}
+    </div>
+  </div>
+  <div class="section">
+    ${sectionTitle('user','Interne Zuordnung')}
+    <div class="grid">
+      ${fld('Zuständiger Mitarbeiter','zust_ma')}
+      ${fld('Partner / Verantwortlicher','zust_partner')}
+      ${fld('Mandant seit','mseit','date')}
+      ${fld('Herkunft des Mandats','herkunft','select','',['Empfehlung','Wechsel vom Vorberater','Eigenakquise','Website / Social Media','Netzwerk / Veranstaltung'])}
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════
+// SEITE: Adresse & Finanzamt
+// ════════════════════════════════════════
+function pageAddr(){
+  return `
+  <div class="section">
+    ${sectionTitle('map','Adresse')}
+    <div class="grid">
+      <div class="field col2"><label>Straße, Hausnummer <span class="req">*</span></label><input value="${D.strasse||''}" onchange="D.strasse=this.value"></div>
+      ${fld('PLZ','plz','text','',null,true)}
+      ${fld('Ort','ort','text','',null,true)}
+      ${fld('Bundesland','bula')}
+      ${fld('Land','land','text','Deutschland')}
+    </div>
+  </div>
+  <div class="section">
+    ${sectionTitle('map','Finanzamt')}
+    <div class="grid">
+      ${fld('Zuständiges Finanzamt','fa')}
+      ${fld('Steuernummer','steuernr_fa')}
+      ${fld('Umsatzsteuer-ID','ustid_fa')}
+      ${fld('Steuer-ID (persönlich)','steuerid_fa')}
+      ${tgl('Abzugebende Steuererklärungen','steuerart',['ESt','KSt','GewSt','USt','Lohnsteuer','Erbschaftsteuer','Schenkungsteuer','Grundsteuer'],true)}
+      ${fld('USt-Voranmeldung','ust_rhythmus','select','',['Monatlich','Quartalsweise','Jährlich','Keine'])}
+      ${fld('Dauerfristverlängerung','dauerfrist','select','',['Ja, vorhanden','Nein','Muss beantragt werden'])}
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════
+// SEITE: Bankverbindung
+// ════════════════════════════════════════
+function pageBank(){
+  return `
+  <div class="section">
+    ${sectionTitle('bank','Bankverbindung')}
+    <div class="grid">
+      <div class="field col2"><label>Kontoinhaber</label><input value="${D.ki||''}" onchange="D.ki=this.value"></div>
+      <div class="field col2"><label>IBAN <span class="req">*</span></label><input value="${D.iban||''}" placeholder="DE00 0000 0000 0000 0000 00" onchange="D.iban=this.value"></div>
+      ${fld('BIC','bic')}
+      ${fld('Kreditinstitut','bank')}
+      ${tgl('SEPA-Lastschrift','sepa',['Ja','Nein'])}
+    </div>
+  </div>
+  <div class="section">
+    ${sectionTitle('bank','Honorar & Rechnungsstellung')}
+    <div class="grid">
+      <div class="field col2"><label>Rechnungsempfänger (falls abweichend)</label><input value="${D.rechempf||''}" onchange="D.rechempf=this.value"></div>
+      ${tgl('Rechnungsweg','rechweg',['E-Mail','Post','Portal'])}
+      ${tgl('Vergütungsmodell','honorar',['Pauschalhonorar','Nach StBVV','Stundenhonorar','Nach Aufwand'])}
+      ${D.honorar==='Pauschalhonorar' ? fld('Monatliches Pauschalhonorar (€ netto)','pausch','number') : ''}
+      ${fld('Zahlungsziel (Tage)','zahlziel','number','14')}
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════
+// SEITE: Leistungen
+// ════════════════════════════════════════
+function pageLeistungen(){
+  const isF = D.mtype==='firma';
+  const allSrv = isF
+    ? ['Finanzbuchhaltung (laufend)','Lohnbuchhaltung','Jahresabschluss / Bilanz','EÜR','Körperschaftsteuer','Gewerbesteuer','Umsatzsteuer','Betriebsprüfungsbegleitung','GmbH-Gründungsberatung','Umwandlung / Umstrukturierung','Betriebsnachfolge','Unternehmensberatung allgemein']
+    : ['Einkommensteuererklärung','Umsatzsteuererklärung','Lohnsteuer (Arbeitnehmer)','Kapitalertragsteuer (Anlage KAP)','Erbschaft- / Schenkungsteuer','Grunderwerbsteuer','Anlage V (Vermietung)','Einspruchsverfahren','Elster-Zugang einrichten','Steuerliche Beratung allgemein'];
+  return `
+  <div class="section">
+    ${sectionTitle('check','Beauftragte Leistungen')}
+    ${tgl('Leistungen (Mehrfachauswahl)','leis',allSrv,true)}
+    <div class="divider"></div>
+    <div class="grid">
+      ${fld('Veranlagungszeitraum / Jahr ab','vz_ab','text','z.B. 2025')}
+      ${isF ? fld('Buchhaltungsübernahme ab','buch_ab','date') : ''}
+      ${fld('Anmerkungen / Steuerliche Besonderheiten','notizen','textarea','z.B. Verlustvorträge, laufende Betriebsprüfung, Scheidungsverfahren, Erbschaft ...')}
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════
+// SEITE: Intern (nur Kanzlei)
+// ════════════════════════════════════════
+function pageIntern(){
+  return `
+  <div class="section">
+    <div class="intern-banner">🔒 Diese Seite ist nur intern sichtbar — nicht für den Mandanten.</div>
+    ${sectionTitle('lock','Kanzleiinterne Daten')}
+    <div class="grid">
+      ${fld('Interne Mandantennummer','intmandnr')}
+      ${fld('DATEV-Mandantennummer','datemandnr')}
+      ${fld('Sachbearbeiter Buchhaltung','sb_buch')}
+      ${fld('Sachbearbeiter Lohn','sb_lohn')}
+      ${fld('Sachbearbeiter Steuern','sb_steu')}
+      ${fld('Partner / Verantwortlicher','partner')}
+      ${fld('Erstgespräch am','erstgesp','date')}
+      ${fld('Mandatsannahme am','mandatam','date')}
+      ${fld('GwG-Prüfung durchgeführt von','gwg_pruef')}
+      ${fld('GwG-Prüfungsdatum','gwg_datum','date')}
+      ${fld('Risikoklasse (GwG)','gwg_risk','select','',['Niedrig','Mittel','Hoch'])}
+      ${fld('Honorarvereinbarung unterzeichnet am','honor_sign','date')}
+      ${fld('DATEV Unternehmen Online aktiv','duo','select','',['Ja','Nein','In Einrichtung'])}
+      ${fld('myDATEV-Zugang erteilt','mydatev','select','',['Ja','Nein'])}
+      ${tgl('Vollmachten vorhanden','vollmachten',['Steuerberatervollmacht','ELSTER-Vollmacht','Kontovollmacht','SEPA-Mandat'],true)}
+    </div>
+    ${warnbox('GwG §11: Identifizierungsprotokoll + Ausweiskopie 5 Jahre aufbewahren. WiEReG / Transparenzregister: Wirtschaftlich Berechtigte dokumentieren.')}
+  </div>`;
+}
+
+// ════════════════════════════════════════
+// SEITE: Zusammenfassung
+// ════════════════════════════════════════
+function pageSummary(){
+  const isF = D.mtype==='firma';
+  const name = isF ? (D.firmenname||'–') : `${D.titel?D.titel+' ':''}${D.vorname||''} ${D.nachname||''}`.trim()||'–';
+  const kids = (D.kinder||[]);
+  return `
+  <div class="done-banner">
+    <span class="check">✅</span>
+    <h2>Onboarding vollständig erfasst</h2>
+    <p>Bitte prüfen, drucken / als PDF speichern und zur Kanzleiakte nehmen.</p>
+  </div>
+  <div class="sum-card">
+    <div class="sum-head">👤 Mandant</div>
+    <div class="sum-row"><span class="sum-k">Typ</span><span class="sum-v">${isF?'Unternehmen':'Privatperson'}</span></div>
+    <div class="sum-row"><span class="sum-k">Name</span><span class="sum-v">${name}</span></div>
+    ${isF?`<div class="sum-row"><span class="sum-k">Rechtsform</span><span class="sum-v">${D.rechtsform||'–'}</span></div>`:''}
+    <div class="sum-row"><span class="sum-k">E-Mail</span><span class="sum-v">${D.email||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Telefon</span><span class="sum-v">${D.tel||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Mandant seit</span><span class="sum-v">${D.mseit||'–'}</span></div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-head">📍 Adresse & Finanzamt</div>
+    <div class="sum-row"><span class="sum-k">Adresse</span><span class="sum-v">${[D.strasse,D.plz,D.ort].filter(Boolean).join(', ')||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Finanzamt</span><span class="sum-v">${D.fa||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Steuernummer</span><span class="sum-v">${D.steuernr_fa||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Steuerarten</span><span class="sum-v">${(D.steuerart||[]).join(', ')||'–'}</span></div>
+  </div>
+  ${!isF ? `<div class="sum-card">
+    <div class="sum-head">👨‍👩‍👧 Familie</div>
+    <div class="sum-row"><span class="sum-k">Familienstand</span><span class="sum-v">${D.famstand||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Steuerklasse</span><span class="sum-v">${D.stklasse||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Veranlagung</span><span class="sum-v">${D.veranlagung||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Kinder</span><span class="sum-v">${kids.length>0 ? kids.map(k=>`${k.vorname||'?'} ${k.nachname||''}`).join(', ') : 'Keine'}</span></div>
+    ${D.eh_vn ? `<div class="sum-row"><span class="sum-k">Ehegatte</span><span class="sum-v">${D.eh_vn} ${D.eh_nn||''}</span></div>` : ''}
+  </div>` : ''}
+  <div class="sum-card">
+    <div class="sum-head">✅ Leistungen</div>
+    <div class="sum-row"><span class="sum-k">Beauftragt</span><span class="sum-v">${(D.leis||[]).join(', ')||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Honorar</span><span class="sum-v">${D.honorar||'–'}${D.pausch?' — '+D.pausch+' €/Monat':''}</span></div>
+    <div class="sum-row"><span class="sum-k">Ab Veranlagungsjahr</span><span class="sum-v">${D.vz_ab||'–'}</span></div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-head">🏦 Bank</div>
+    <div class="sum-row"><span class="sum-k">IBAN</span><span class="sum-v">${D.iban||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Kreditinstitut</span><span class="sum-v">${D.bank||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">SEPA-Lastschrift</span><span class="sum-v">${D.sepa||'–'}</span></div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-head">🔒 Intern</div>
+    <div class="sum-row"><span class="sum-k">DATEV-Nr.</span><span class="sum-v">${D.datemandnr||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">Zuständig</span><span class="sum-v">${D.zust_ma||'–'}</span></div>
+    <div class="sum-row"><span class="sum-k">GwG-Prüfung</span><span class="sum-v">${D.gwg_datum?'Am '+D.gwg_datum:'Ausstehend ⚠'}</span></div>
+  </div>
+  ${D.notizen ? `<div class="sum-card"><div class="sum-head">📝 Notizen</div><div class="sum-row"><span class="sum-v" style="max-width:100%;text-align:left">${D.notizen}</span></div></div>` : ''}
+  <div style="margin-top:16px;text-align:center;color:var(--gray);font-size:12px">Erstellt am ${new Date().toLocaleDateString('de-DE')} · Mandanten-Onboarding</div>`;
+}
+
+// ════════════════════════════════════════
+// RENDER ENGINE
+// ════════════════════════════════════════
+function getPageContent(idx){
+  const s = steps();
+  const name = s[idx];
+  const isF = D.mtype==='firma';
+  if(idx===0) return pageType();
+  if(name==='Persönliche Daten') return pagePerson();
+  if(name==='Unternehmen') return pageCompany();
+  if(name==='Ansprechpartner') return pageContact();
+  if(name==='Familie & Kinder') return pageFamilie();
+  if(name==='Kommunikation') return pageKomm();
+  if(name==='Adresse & Finanzamt') return pageAddr();
+  if(name==='Bankverbindung') return pageBank();
+  if(name==='Leistungen') return pageLeistungen();
+  if(name==='Intern') return pageIntern();
+  if(name==='Zusammenfassung') return pageSummary();
+  return '';
+}
+
+function renderAll(){
+  const s = steps();
+  const total = s.length;
+
+  // Steps nav
+  const nav = document.getElementById('stepsNav');
+  nav.innerHTML = s.map((name,i)=>`<button class="step-btn ${i===currentStep?'active':''} ${i<currentStep?'done':''}" onclick="currentStep=${i};renderAll()">${name}</button>`).join('');
+
+  // Progress
+  const pct = currentStep===0 ? 0 : Math.round(currentStep/(total-1)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('stepPct').textContent = pct+'%';
+  document.getElementById('stepLabel').textContent = `Schritt ${currentStep+1} von ${total}`;
+
+  // Page content
+  const pages = document.getElementById('pages');
+  let html = `<div>${getPageContent(currentStep)}`;
+
+  // Nav buttons
+  if(currentStep===0 && !D.mtype){
+    html += '';
+  } else if(currentStep < total-1){
+    html += `<div class="nav-bar">`;
+    if(currentStep>0) html += `<button class="btn-secondary" onclick="currentStep--;renderAll()">← Zurück</button>`;
+    html += `<button class="btn-primary" onclick="currentStep++;renderAll()">Weiter →</button>`;
+    html += `</div>`;
+  } else {
+    html += `<div class="nav-bar">`;
+    html += `<button class="btn-secondary" onclick="currentStep--;renderAll()">← Zurück</button>`;
+    html += `<button class="btn-print" onclick="window.print()">🖨 Als PDF speichern</button>`;
+    html += `</div>`;
+  }
+  html += `</div>`;
+  pages.innerHTML = html;
+}
+
+function toggleArr(key, val){
+  if(!D[key]) D[key]=[];
+  const i=D[key].indexOf(val);
+  if(i>-1) D[key].splice(i,1); else D[key].push(val);
+  renderAll();
+}
+function toggleKind(idx, val){
+  if(!D.kinder[idx].positionen) D.kinder[idx].positionen=[];
+  const i=D.kinder[idx].positionen.indexOf(val);
+  if(i>-1) D.kinder[idx].positionen.splice(i,1); else D.kinder[idx].positionen.push(val);
+  renderAll();
+}
+
+renderAll();
+</script>
+</body>
+</html>
